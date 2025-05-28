@@ -15,13 +15,18 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title" th:text="${course.title}"></h5>
-                        <h6 class="card-subtitle mb-2 text-muted" th:text="${course.courseCode} + ' - ' + ${course.creditHours} + ' credits'"></h6>
+                        <h6 class="card-subtitle mb-2 text-muted" 
+                            th:text="${course.courseCode} + ' - ' + ${course.creditHours} + ' credits'"></h6>
                         <p class="card-text">
                             <strong>Schedule:</strong> <span th:text="${course.scheduleSlot}"></span><br>
                             <strong>Faculty:</strong> <span th:text="${course.facultyName}"></span><br>
+                            <strong>Status:</strong> <span th:text="${course.status}"></span><br>
                             <strong>Seats:</strong> <span th:text="${course.enrolledCount} + '/' + ${course.capacity}"></span>
                         </p>
-                        <a th:href="@{/web/course/{code}(code=${course.courseCode})}" class="btn btn-primary">View Details</a>
+                        <a th:href="@{/web/course/{code}(code=${course.courseCode})}" 
+                           class="btn btn-primary">View Details</a>
+                        <span th:if="${course.status == 'CANCELLED'}" class="badge bg-danger ms-2">Cancelled</span>
+                        <span th:if="${course.status == 'UNDER_ENROLLED'}" class="badge bg-warning ms-2">Under-Enrolled</span>
                     </div>
                 </div>
             </div>

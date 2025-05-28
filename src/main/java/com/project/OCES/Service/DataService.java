@@ -13,14 +13,15 @@ public class DataService {
     private final Map<String, Course> courses = new ConcurrentHashMap<>();
     private final Map<String, Faculty> faculties = new ConcurrentHashMap<>();
     private final List<Enrollment> enrollments = Collections.synchronizedList(new ArrayList<>());
+    private final Map<String, List<Notification>> notifications = new ConcurrentHashMap<>();
     
     @PostConstruct
     public void initializeData() {
         // Initialize Faculty
-        Faculty faculty1 = new Faculty("F001", "Dr. John Smith", "john.smith@university.edu");
-        Faculty faculty2 = new Faculty("F002", "Dr. Sarah Johnson", "sarah.johnson@university.edu");
-        Faculty faculty3 = new Faculty("F003", "Dr. Michael Brown", "michael.brown@university.edu");
-        Faculty faculty4 = new Faculty("F004", "Dr. Emily Davis", "emily.davis@university.edu");
+        Faculty faculty1 = new Faculty("F001", "Dr. Syed Sameed Abbas", "syed.sameed@university.edu");
+        Faculty faculty2 = new Faculty("F002", "Dr. Ali Raza", "ali.raza@university.edu");
+        Faculty faculty3 = new Faculty("F003", "Dr. Zaid khan", "zaid.khann@university.edu");
+        Faculty faculty4 = new Faculty("F004", "Dr. Abdullah", "abdullah.123@university.edu");
         
         faculties.put("F001", faculty1);
         faculties.put("F002", faculty2);
@@ -49,17 +50,27 @@ public class DataService {
         courses.put("CS201", course6);
         
         // Initialize Students
-        Student student1 = new Student("S001", "Alice Johnson", "alice.johnson@student.edu");
-        Student student2 = new Student("S002", "Bob Smith", "bob.smith@student.edu");
-        Student student3 = new Student("S003", "Carol Williams", "carol.williams@student.edu");
-        Student student4 = new Student("S004", "David Brown", "david.brown@student.edu");
-        Student student5 = new Student("S005", "Eva Davis", "eva.davis@student.edu");
+        Student student1 = new Student("S001", "Muhammad Ahsan khan", "muhammad.ahsan@student.edu");
+        Student student2 = new Student("S002", "Zaid khan", "zaid.khanh@student.edu");
+        Student student3 = new Student("S003", "Abdullah khan", "abdullah.khan@student.edu");
+        Student student4 = new Student("S004", "Ali Raza", "ali.raza@student.edu");
+        Student student5 = new Student("S005", "Malik", "malik.malik@student.edu");
+        Student student6 = new Student("S006", "Adil Wagan", "adil.wagan@student.edu");
+        Student student7 = new Student("S007", "Mujeed Bhoto", "mujeed.bhoto@student.edu");
+        Student student8 = new Student("S008", "Ayesha Khan", "ayesha.khan@student.edu");
+        Student student9 = new Student("S009", "Adbul Hadi", "abdul.hadi@student.edu");
+        Student student10 = new Student("S010", "Muhammad Rizwan", "muhammad.rizwan@student.edu");
         
         students.put("S001", student1);
         students.put("S002", student2);
         students.put("S003", student3);
         students.put("S004", student4);
         students.put("S005", student5);
+        students.put("S006", student6);
+        students.put("S007", student7);
+        students.put("S008", student8);
+        students.put("S009", student9);
+        students.put("S010", student10);
     }
     
     // Student operations
@@ -85,13 +96,39 @@ public class DataService {
         return enrollments.stream()
                 .filter(e -> e.getStudentId().equals(studentId))
                 .filter(e -> e.getStatus() == EnrollmentStatus.ENROLLED)
-                .collect(ArrayList::new, (list, item) -> list.add(item), (list1, list2) -> list1.addAll(list2));
+                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
     
     public List<Enrollment> getEnrollmentsByCourse(String courseCode) {
         return enrollments.stream()
                 .filter(e -> e.getCourseCode().equals(courseCode))
                 .filter(e -> e.getStatus() == EnrollmentStatus.ENROLLED)
-                .collect(ArrayList::new, (list, item) -> list.add(item), (list1, list2) -> list1.addAll(list2));
+                .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+    }
+    
+    // Notification operations
+    public void addNotification(Notification notification) {
+        notifications.computeIfAbsent(notification.getRecipientId(), k -> new ArrayList<>()).add(notification);
+    }
+    
+    public List<Notification> getNotifications(String recipientId) {
+        return notifications.getOrDefault(recipientId, new ArrayList<>());
+    }
+    
+    public void markAsRead(String recipientId, String notificationId) {
+        List<Notification> userNotifications = notifications.get(recipientId);
+        if (userNotifications != null) {
+            userNotifications.stream()
+                .filter(n -> n.getId().equals(notificationId))
+                .findFirst()
+                .ifPresent(n -> n.setRead(true));
+        }
+    }
+    
+    public int getUnreadNotificationCount(String recipientId) {
+        return (int) notifications.getOrDefault(recipientId, new ArrayList<>())
+                .stream()
+                .filter(n -> !n.isRead())
+                .count();
     }
 }

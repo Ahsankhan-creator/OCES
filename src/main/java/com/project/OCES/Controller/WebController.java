@@ -2,6 +2,7 @@ package com.project.OCES.Controller;
 
 import com.project.OCES.DTO.CourseInfo;
 import com.project.OCES.DTO.EnrollmentResponse;
+import com.project.OCES.Service.DataService;
 import com.project.OCES.Service.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,8 +16,12 @@ public class WebController {
     @Autowired
     private EnrollmentService enrollmentService;
     
+    @Autowired
+    private DataService dataService;
+    
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        model.addAttribute("students", dataService.getAllStudents().values());
         return "index";
     }
     
@@ -31,6 +36,7 @@ public class WebController {
         model.addAttribute("studentId", studentId);
         model.addAttribute("availableCourses", enrollmentService.getAvailableCourses());
         model.addAttribute("enrolledCourses", enrollmentService.getStudentEnrolledCourses(studentId));
+        model.addAttribute("unreadCount", dataService.getUnreadNotificationCount(studentId));
         return "enroll";
     }
     
@@ -67,5 +73,29 @@ public class WebController {
         model.addAttribute("students", enrollmentService.getEnrolledStudentsInCourse(courseCode));
         return "course-details";
     }
+    
+    @GetMapping("/notifications/{userId}")
+    public String viewNotifications(@PathVariable String userId, Model model) {
+        model.addAttribute("notifications", dataService.getNotifications(userId));
+        model.addAttribute("userId", userId);
+        model.addAttribute("unreadCount", dataService.getUnreadNotificationCount(userId));
+        return "notifications";
+    }
+    
+    @PostMapping("/notifications/mark-read/{userId}/{notificationId}")
+    public String markNotificationAsRead(
+            @PathVariable String userId,
+            @PathVariable String notificationId) {
+        dataService.markAsRead(userId, notificationId);
+        return "redirect:/web/notifications/" + userId;
+    }
+    
+    @PostMapping("/cancel-course/{courseCode}")
+    public String cancelCourse(@PathVariable String courseCode,
+                             @RequestParam String facultyId,
+                             Model model) {
+        EnrollmentResponse response = enrollmentService.cancelCourse(courseCode, facultyId);
+        model.addAttribute("message", response.getMessage());
+        return "redirect:/web/course/" + courseCode;
+    }
 }
-

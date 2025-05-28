@@ -7,8 +7,10 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 th:text="${course.title}"></h1>
-        <a href="/web/courses" class="btn btn-secondary mb-3">Back to Courses</a>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 th:text="${course.title}"></h1>
+            <a href="/web/courses" class="btn btn-secondary">Back to Courses</a>
+        </div>
         
         <div class="card mb-4">
             <div class="card-body">
@@ -16,9 +18,19 @@
                 <p class="card-text">
                     <strong>Schedule:</strong> <span th:text="${course.scheduleSlot}"></span><br>
                     <strong>Faculty:</strong> <span th:text="${course.facultyName}"></span><br>
-                    <strong>Status:</strong> <span th:text="${course.status}"></span><br>
+                    <strong>Status:</strong> 
+                    <span th:text="${course.status}" 
+                          th:class="${course.status == 'CANCELLED'} ? 'badge bg-danger' : 
+                                    (${course.status == 'UNDER_ENROLLED'} ? 'badge bg-warning' : 'badge bg-success')"></span><br>
                     <strong>Enrollment:</strong> <span th:text="${course.enrolledCount} + '/' + ${course.capacity}"></span>
                 </p>
+                
+                <div th:if="${course.status != 'CANCELLED' and course.facultyName.startsWith('Dr.')}">
+                    <form th:action="@{/web/cancel-course/{code}(code=${course.courseCode})}" method="post">
+                        <input type="hidden" name="facultyId" th:value="${course.facultyId.replace('Dr. ', 'F')}">
+                        <button type="submit" class="btn btn-danger">Cancel Course</button>
+                    </form>
+                </div>
             </div>
         </div>
         
@@ -37,7 +49,9 @@
             <tbody>
                 <tr th:each="student : ${students}">
                     <td th:text="${student.studentId}"></td>
-                    <td th:text="${student.name}"></td>
+                    <td>
+                        <a th:href="@{/web/enroll/{id}(id=${student.studentId})}" th:text="${student.name}"></a>
+                    </td>
                     <td th:text="${student.email}"></td>
                 </tr>
             </tbody>

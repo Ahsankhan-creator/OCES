@@ -14,7 +14,15 @@
                 <p class="card-text">Manage your course enrollments easily</p>
                 <div class="d-grid gap-2">
                     <a href="/web/courses" class="btn btn-primary">View Available Courses</a>
-                    <a href="/web/enroll/S001" class="btn btn-secondary">View Enrollment (Sample Student)</a>
+                </div>
+                
+                <h5 class="mt-4">Students</h5>
+                <div class="list-group">
+                    <a th:each="student : ${students}" 
+                       th:href="@{/web/enroll/{id}(id=${student.studentId})}" 
+                       class="list-group-item list-group-item-action">
+                        <span th:text="${student.name} + ' (' + ${student.studentId} + ')'"></span>
+                    </a>
                 </div>
             </div>
         </div>
