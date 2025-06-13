@@ -13,6 +13,7 @@ public class CourseInfo {
     private int enrolledCount;
     private int availableSeats;
     private String facultyName;
+    private String facultyId;  // Add this field
     private CourseStatus status;
     
     public CourseInfo() {}
@@ -26,10 +27,10 @@ public class CourseInfo {
         this.enrolledCount = course.getEnrolledCount();
         this.availableSeats = course.getAvailableSeats();
         this.facultyName = facultyName;
+        this.facultyId = course.getFacultyId();
         this.status = course.getStatus();
     }
     
-    // Getters and Setters
     public String getCourseCode() { return courseCode; }
     public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
     
@@ -53,6 +54,9 @@ public class CourseInfo {
     
     public String getFacultyName() { return facultyName; }
     public void setFacultyName(String facultyName) { this.facultyName = facultyName; }
+    
+    public String getFacultyId() { return facultyId; }
+    public void setFacultyId(String facultyId) { this.facultyId = facultyId; }
     
     public CourseStatus getStatus() { return status; }
     public void setStatus(CourseStatus status) { this.status = status; }

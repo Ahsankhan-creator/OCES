@@ -22,15 +22,16 @@ public class FacultyController {
     
     @GetMapping("/{facultyId}")
     public ResponseEntity<Faculty> getFaculty(@PathVariable String facultyId) {
-        Faculty faculty = dataService.getFacultyById(facultyId);
-        if (faculty == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(faculty);
+        return dataService.getFacultyById(facultyId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
     
     @PostMapping
     public ResponseEntity<Faculty> addFaculty(@RequestBody Faculty faculty) {
+        if (faculty == null || faculty.getFacultyId() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(dataService.addFaculty(faculty));
     }
 }

@@ -22,16 +22,16 @@ public class CourseController {
     
     @GetMapping("/{courseCode}")
     public ResponseEntity<Course> getCourse(@PathVariable String courseCode) {
-        Course course = dataService.getCourseByCode(courseCode);
-        if (course == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(course);
+        return dataService.getCourseByCode(courseCode)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
     
     @PostMapping
     public ResponseEntity<Course> addCourse(@RequestBody Course course) {
+        if (course == null || course.getCourseCode() == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(dataService.addCourse(course));
     }
 }
-
